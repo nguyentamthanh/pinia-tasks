@@ -2,19 +2,9 @@ import { defineStore } from "pinia";
 
 export const useTaskStore = defineStore(`taskStore`, {
   state: () => ({
-    tasks: [
-      {
-        id: 1,
-        title: "milk",
-        isFav: false,
-      },
-      {
-        id: 2,
-        title: "tea",
-        isFav: true,
-      },
-    ],
+    tasks: [],
     name: "Thanh Kun",
+    loading: false,
   }),
   getters: {
     favs() {
@@ -30,17 +20,58 @@ export const useTaskStore = defineStore(`taskStore`, {
     },
   },
   actions: {
-    addTask(task) {
-      this.tasks.push(task);
+    async getTasks() {
+      this.loading = true;
+      const res = await fetch(
+        "https://6214967f89fad53b1f17fd73.mockapi.io/api/noitu/todolist"
+      );
+      const data = await res.json();
+      this.tasks = data;
+      this.loading = false;
     },
-    deleteTask(id) {
+    async addTask(task) {
+      this.tasks.push(task);
+      const res = await fetch(
+        "https://6214967f89fad53b1f17fd73.mockapi.io/api/noitu/todolist",
+        {
+          method: "POST",
+          body: JSON.stringify(task),
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      if (res.error) {
+        console.log(res.error);
+      }
+    },
+    async deleteTask(id) {
       this.tasks = this.tasks.filter((t) => {
         return t.id !== id;
       });
+      const res = await fetch(
+        "https://6214967f89fad53b1f17fd73.mockapi.io/api/noitu/todolist/" + id,
+        {
+          method: "DELETE",
+        }
+      );
+      if (res.error) {
+        console.log(res.error);
+      }
     },
-    toggleFav(id) {
+    async toggleFav(id) {
       const task = this.tasks.find((t) => t.id === id);
       task.isFav = !task.isFav;
+
+      const res = await fetch(
+        "https://6214967f89fad53b1f17fd73.mockapi.io/api/noitu/todolist/" + id,
+        {
+          method: "PATCH",
+          body: JSON.stringify({ isFav: task.isFav }),
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      if (res.error) {
+        console.log(res.error);
+      }
     },
   },
 });

@@ -1,12 +1,13 @@
 <template>
   <div class="task">
     <h3>{{ task.title }}</h3>
+
     <div class="icons">
-      <div>{{ taskScore }}</div>
-      <i class="material-icons" @click="taskStore.deleteTask(task.id)"
-        >delete</i
-      >
-      <i class="material-icons" @click="taskScore.toggleFav(task.id)"
+      <i class="material-icons" @click="deleteTask(task.id)">delete</i>
+      <i
+        class="material-icons"
+        :class="{ active: task.isFav }"
+        @click="toggleFav(task.id)"
         >favorite</i
       >
     </div>
@@ -19,8 +20,10 @@ import { useTaskStore } from "../stores/TaskStore";
 export default {
   props: ["task"],
   setup() {
-    const taskScore = useTaskStore();
-    return { taskScore };
+    const taskStore = useTaskStore();
+    const deleteTask = taskStore.deleteTask;
+    const toggleFav = taskStore.toggleFav;
+    return { taskStore, deleteTask, toggleFav };
   },
 };
 </script>
