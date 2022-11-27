@@ -42,6 +42,7 @@ export const useTaskStore = defineStore(`taskStore`, {
       if (res.error) {
         console.log(res.error);
       }
+      await this.getTasks();
     },
     async deleteTask(id) {
       this.tasks = this.tasks.filter((t) => {
@@ -64,11 +65,12 @@ export const useTaskStore = defineStore(`taskStore`, {
       const res = await fetch(
         "https://6214967f89fad53b1f17fd73.mockapi.io/api/noitu/todolist/" + id,
         {
-          method: "PATCH",
+          method: "PUT",
           body: JSON.stringify({ isFav: task.isFav }),
           headers: { "Content-Type": "application/json" },
         }
       );
+
       if (res.error) {
         console.log(res.error);
       }
